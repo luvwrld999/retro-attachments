@@ -1,5 +1,5 @@
 // Retro Attachments home-screen launcher. SPDX-License-Identifier: GPL-3.0-or-later
-// Uses the public native-app ABI and local elfldr's raw ELF stream protocol.
+// Ask local websrv to launch the viewer as graphical homebrew (BigApp).
 #include <cstddef>
 #include <cstdint>
 #include <fcntl.h>
@@ -37,7 +37,7 @@ static void notify(const char *message) {
   sceKernelSendNotificationRequest(0, &request, sizeof(request), 0);
 }
 int main() {
-  int file = sceKernelOpen("/app0/retroatlas.elf", O_RDONLY, 0);
+  int file = sceKernelOpen("/data/homebrew/PPSA99841/retroatlas.elf", O_RDONLY, 0);
   if (file < 0) {
     notify("Retro Attachments: app payload is missing. Reinstall Retro Attachments.");
     return 1;
@@ -61,7 +61,7 @@ int main() {
   for (int option : {0x1105, 0x1106, 0x1109})
     ready = ready && sceNetSetsockopt(socket, 0xffff, option, &timeout,
                                       sizeof(timeout)) >= 0;
-  constexpr std::uint16_t port = 9021;
+  constexpr std::uint16_t port = 8080;
   Endpoint endpoint{
       16,         2, static_cast<std::uint16_t>((port << 8) | (port >> 8)),
       0x0100007f, 0, {0}};
@@ -69,33 +69,32 @@ int main() {
   if (!ready) {
     sceNetSocketClose(socket);
     sceKernelClose(file);
-    notify("Retro Attachments: start your ELF loader on port 9021, then open this app "
+    notify("Retro Attachments: start Homebrew Launcher / websrv on port 8080, then open this app "
            "again.");
     return 1;
   }
+  // Use the stable installed path: hbldr can terminate this launcher before
+  // reading the ELF, at which point /app0 may no longer refer to our title.
+  constexpr char request[] =
+      "GET /hbldr?path=%2Fdata%2Fhomebrew%2FPPSA99841%2Fretroatlas.elf&daemon=0 HTTP/1.1\r\n"
+      "Host: 127.0.0.1:8080\r\nConnection: close\r\n\r\n";
   bool sent = true;
-  while (count > 0) {
-    std::size_t offset = 0;
-    while (offset < static_cast<std::size_t>(count)) {
-      int n = sceNetSend(socket, buffer + offset,
-                         static_cast<std::size_t>(count) - offset, 0);
-      if (n <= 0) {
-        sent = false;
-        break;
-      }
-      offset += n;
-    }
-    if (!sent)
+  std::size_t offset = 0;
+  while (offset < sizeof(request) - 1) {
+    int n = sceNetSend(socket, request + offset, sizeof(request) - 1 - offset, 0);
+    if (n <= 0 || static_cast<std::size_t>(n) > sizeof(request) - 1 - offset) {
+      sent = false;
       break;
-    count = sceKernelRead(file, buffer, sizeof(buffer));
+    }
+    offset += static_cast<std::size_t>(n);
   }
-  if (count < 0)
-    sent = false;
   sceKernelClose(file);
   sceNetSocketClose(socket);
   if (!sent)
-    notify("Retro Attachments: payload transfer failed. Restart your ELF loader and "
+    notify("Retro Attachments: launch request failed. Check Homebrew Launcher / websrv and "
            "try again.");
-  // Transfer success is not an acknowledgement of application startup.
+  // Request submission is not an acknowledgement of application startup.
+  // hbldr may terminate this BigApp while launching the viewer, so do not
+  // block waiting for an HTTP response that this process may never receive.
   return sent ? 0 : 1;
 }

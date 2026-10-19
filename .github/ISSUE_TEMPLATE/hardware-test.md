@@ -7,7 +7,8 @@ about: Report a Retro Attachments app or installer result on a real PS5
 - Firmware:
 - Jailbreak:
 - ShadowMountPlus version:
-- ELF loader and port:
+- Homebrew Launcher / websrv version and port:
+- Launch action (graphical library / ELF upload / Payload Manager):
 - Fresh install or update:
 - Installer result:
 - Tile appeared:

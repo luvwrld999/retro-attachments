@@ -1,44 +1,32 @@
-# Install the Retro Attachments home-screen launcher
+# Install and launch Retro Attachments
 
-This is an initial hardware-test build. **The installer, home-screen launch path and app have not been tested on a PS5, including firmware 13.60.** Host tests and format checks do not establish console compatibility.
+Version 0.1.3-alpha.1 changes graphical launch to PS5 Homebrew Launcher / websrv. Previous Payload Manager tests failed during direct display-memory allocation. This new path is not yet confirmed on the user's PS5.
 
-## What you get
+## Test the viewer first
 
-- `retro-attachments-installer.elf`: a graphical, offline installer containing every app file. Installation starts only after pressing Cross or Enter.
-- `PPSA99841.zip`: the same app folder for manual FTP installation.
-- `retro-attachments.elf`: the original standalone viewer payload.
+1. Download `Retro-Attachments-Homebrew-Launcher.zip`.
+2. Extract the contained `homebrew` folder onto your USB root. The viewer must be at `homebrew/RetroAttachments/eboot.elf`; the installer is `homebrew/RetroAttachmentsInstaller/eboot.elf`. Alternatively copy these two app folders into `/data/homebrew/` over FTP. Do not overwrite unrelated folders.
+3. Close any game or other graphical homebrew first; websrv's graphical loader can terminate a running BigApp when launching another.
+4. Start your jailbreak and Homebrew Launcher / websrv. Refresh its homebrew library, normally at `http://YOUR-PS5-IP:8080/`.
+5. Launch **RetroAttachments** from the library as graphical homebrew. Do not send this viewer through Payload Manager or the websrv `/elfldr` upload page. Do not select daemon/background execution.
+6. Check display, controller input, demo, and clean exit before connecting your account.
 
-The installed title is a native PS5 **launcher** (`eboot.bin`, `sce_module/libc.prx`, icon and metadata). It streams the bundled viewer ELF from `/app0/retroatlas.elf` to the console's own ELF loader at `127.0.0.1:9021`, then exits. The viewer runs as a payload. This is not a self-contained native port of the viewer or a signed retail PKG, and the home-screen tile cannot replace your jailbreak/ELF loader. No exploit or firmware patches are included.
+The folder layout follows [websrv's homebrew instructions](https://github.com/ps5-payload-dev/websrv#installing-homebrew). No firmware compatibility is inferred from this layout alone. If startup still fails, report its last notification or `/data/retro-attachments-startup.log`.
 
-## Console requirements
+## Optional home-screen shortcut
 
-- Your working jailbreak and permission to execute graphical PS5 payloads.
-- An ELF loader accepting raw ELF streams on **port 9021** for launching the installed tile. The installer itself may be launched by any compatible ELF loader.
-- **ShadowMountPlus with folder scanning of `/data/homebrew`**. Target the modern 1.7beta4-or-newer folder workflow; this project has not verified it on hardware. Original ShadowMount compatibility is not established. See [ShadowMountPlus upstream](https://github.com/drakmor/ShadowMountPlus).
-- Writable `/data` and sufficient free storage for the app plus an 8 MiB staging margin. Updates keep the previous app folder, so retain additional space for backups.
+1. Once the viewer works, launch **RetroAttachmentsInstaller** from that same Homebrew Launcher library. It also needs graphical-app launch, not ordinary payload injection.
+2. Review `/data/homebrew/PPSA99841`, then press Cross to install or Circle to cancel. The installer verifies and copies files; it does not register titles itself.
+3. Exit and let compatible ShadowMountPlus folder scanning register the title.
+4. Keep websrv running on port **8080**, then open the Retro Attachments home-screen tile.
 
-## Installer steps
+The native shortcut verifies `/data/homebrew/PPSA99841/retroatlas.elf` and sends a local HTTP request to websrv's `/hbldr` endpoint with daemon mode disabled. It no longer streams the ELF to port 9021. The stable installed path is used because websrv may terminate the shortcut and unmount its `/app0` while starting the viewer. Sending the request is not proof that the viewer launched.
 
-1. Close Retro Attachments if it is running. Start your jailbreak, ShadowMountPlus and ELF loader as usual.
-2. Send **`retro-attachments-installer.elf`** through your normal payload-loading method.
-3. Review the destination shown on screen: `/data/homebrew/PPSA99841`.
-4. Press **Cross** to install, or **Circle** to cancel. Keep the console on until installation finishes.
-5. When the installer reports that the **files** are installed, press Circle to exit. Let ShadowMountPlus scan the folder. Its registration step is separate from the installer's file copy.
-6. Open the **Retro Attachments** tile. Keep the ELF loader on port 9021 active. Try Demo Preview first, then configure your account if display/input/exit all work.
+The installer requires writable `/data` and room for the app, staging files, and retained update backup. ShadowMountPlus must support folder scanning; original ShadowMount support is not established. See [upstream ShadowMountPlus](https://github.com/drakmor/ShadowMountPlus).
 
-The native launcher reports missing-payload, connection and transfer errors through console notifications. A successful stream transfer is not proof that the viewer opened; confirm its interface appears.
+## Manual shortcut installation
 
-If the tile does not appear, inspect ShadowMountPlus's own status and folder-scanning configuration. The installer does **not** modify the console's application database or directly register/unregister titles. Do not assume a successful copy means a title was registered.
-
-## Manual alternative
-
-Extract `PPSA99841.zip` and upload the complete `PPSA99841` folder to `/data/homebrew/`. The executable must be exactly:
-
-```text
-/data/homebrew/PPSA99841/eboot.bin
-```
-
-Avoid an extra nested `PPSA99841` directory. Preserve executable permissions (`0755`) on `eboot.bin`, `retroatlas.elf`, and `sce_module/libc.prx`, and allow directory traversal. Do not overwrite an existing unrelated folder with this development title ID. Let ShadowMountPlus register the folder, then follow step 6 above.
+Extract `PPSA99841.zip` into `/data/homebrew/`, producing `/data/homebrew/PPSA99841/eboot.bin`. Preserve executable permissions on the binaries. Never overwrite an unrelated folder with this title ID. Let ShadowMountPlus register it and keep websrv on port 8080 running. For first testing, the USB Homebrew Launcher package is simpler and does not require installing this shortcut.
 
 ## Updates and recovery
 
@@ -59,4 +47,4 @@ Close the viewer, use ShadowMountPlus's documented unmount/unregister process, a
 
 ## Before a public release
 
-Record the exact console firmware, jailbreak, ShadowMountPlus version and ELF loader version. Verify fresh install, tile registration, Demo Preview, live account access, input, clean exit, relaunch, theme/settings persistence and an update. Confirm the development title ID `PPSA99841` does not conflict with another app in your intended distribution. Do not label the build firmware-compatible based on compilation alone.
+Record the exact console firmware, jailbreak, ShadowMountPlus version and Homebrew Launcher / websrv version. Verify fresh install, tile registration, Demo Preview, live account access, input, clean exit, relaunch, theme/settings persistence and an update. Confirm the development title ID `PPSA99841` does not conflict with another app in your intended distribution. Do not label the build firmware-compatible based on compilation alone.

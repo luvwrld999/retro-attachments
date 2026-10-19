@@ -29,6 +29,10 @@ struct Installer {
         root = argv[++i];
 #endif
     }
+#ifdef __PROSPERO__
+    SDL_setenv("SDL_VIDEODRIVER", "ps5", 1);
+#endif
+    startupTrace("Installer: initializing video and controller");
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_TIMER) !=
         0)
       throw std::runtime_error(SDL_GetError());
@@ -113,8 +117,8 @@ struct Installer {
     if (s == 0) {
       p.wrap("Adds a Retro Attachments home-screen launcher using "
              "ShadowMountPlus. "
-             "The launcher starts the included app through your local ELF "
-             "loader on port 9021.",
+             "Keep Homebrew Launcher / websrv running on port 8080 "
+             "to open the installed app.",
              112, 284, 24, t.muted, 1040, 3);
       p.text("Destination: /data/homebrew/PPSA99841", 112, 392, 22, t.accent);
       p.text("Close Retro Attachments first. Existing app backed up; settings "
@@ -189,10 +193,13 @@ struct Installer {
   }
 };
 int main(int argc, char **argv) {
+  startupTrace("Installer: entered main");
   try {
     Installer app(argc, argv);
     app.run();
   } catch (const std::exception &e) {
+    startupTrace(e.what());
+    SDL_Quit();
     fprintf(stderr, "Retro Attachments installer: %s\n", e.what());
     return 1;
   }

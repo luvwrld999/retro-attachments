@@ -1,15 +1,24 @@
 # Retro Attachments — PS5 RetroAchievements viewer
 
-Native SDL2 application targeting the PS5 payload SDK, distributed as `dist/retro-attachments.elf`.
-**Version 0.1.2-alpha.1** is the renderer startup fix alpha. It cross-compiles successfully; it has **not been run on a PS5**. Firmware 13.60 and your particular ELF loader still require testing. A native home-screen launcher and installer are now included; see [installation and recovery instructions](docs/INSTALL.md).
+**v0.1.3-alpha.1** packages the viewer and graphical installer for **PS5 Homebrew Launcher / websrv**. Earlier alpha builds failed to allocate display memory when launched through Payload Manager. This build corrects the launch path; successful display on firmware 13.60 still needs confirmation.
 
-## Download
+## Download and run
 
-[Download v0.1.2-alpha.1](https://github.com/luvwrld999/retro-attachments/releases/tag/v0.1.2-alpha.1). Choose `retro-attachments.elf` for direct loading, `retro-attachments-installer.elf` for the home-screen installer, or the complete ZIP for both plus source and screenshots. See [installation instructions](docs/INSTALL.md).
+[Download v0.1.3-alpha.1](https://github.com/luvwrld999/retro-attachments/releases/tag/v0.1.3-alpha.1). Start with **Retro-Attachments-Homebrew-Launcher.zip**.
 
-## Renderer startup fix in 0.1.2-alpha.1
+1. Extract the ZIP's `homebrew` folder to the root of a USB drive, or copy its two app folders into `/data/homebrew/` using FTP.
+2. Close any running game/homebrew, start your jailbreak and Homebrew Launcher / websrv, and open its homebrew library (usually `http://YOUR-PS5-IP:8080/`).
+3. Launch **RetroAttachments** from that library. Use its graphical homebrew launch action, not Payload Manager or websrv's ELF-upload/daemon action.
+4. If the viewer opens, test the demo and then enter your RetroAchievements username and web API key in **Settings**. The key is available at https://retroachievements.org/settings; do not enter your password.
+5. Optionally launch **RetroAttachmentsInstaller** from the same library to install the ShadowMountPlus home-screen shortcut.
 
-Fixes the window-renderer selection path that failed with "Couldn't find matching render driver" on the reported Payload Manager 0.5.2 setup. The PS5 build now binds its software renderer directly to the window surface and explicitly presents that surface. This fix still requires on-console confirmation.
+See [installation and recovery](docs/INSTALL.md). The installed shortcut now requests graphical homebrew launch through websrv on **127.0.0.1:8080**. Keep websrv running when using it. ShadowMountPlus alone does not replace websrv.
+
+## Why the launch path changed
+
+The on-console diagnostic reached SDL's window-surface creation and reported `sceKernelAllocateMainDirectMemory: Resource temporarily unavailable`. The linked PS5 SDL backend requests 64 MiB of direct display memory there. Ordinary ELF loading and graphical homebrew loading are separate paths in upstream websrv; the latter starts the ELF in a BigApp process. The old shortcut incorrectly streamed the viewer to the ordinary ELF loader on port 9021.
+
+This version uses the graphical path and keeps startup notifications and `/data/retro-attachments-startup.log` enabled. It does not alter console memory budgets or apply kernel patches. Desktop tests and compilation do not establish on-console compatibility.
 
 ## Interface preview
 
@@ -21,23 +30,9 @@ Demo data shown below; no account credentials are included.
 
 ![Built-in themes](docs/images/themes.png)
 
-## Home-screen installer
+## Account settings
 
-Build with `make installer`, then launch `dist/retro-attachments-installer.elf`. Confirm with Cross, exit after the files are installed, and let ShadowMountPlus register `/data/homebrew/PPSA99841`. The tile runs a native launcher that streams the bundled viewer to the local ELF loader on port 9021. It still needs the jailbreak, ELF loader and compatible ShadowMountPlus active. This launch path is untested on PS5 hardware.
-
-`dist/PPSA99841.zip` is the manual folder-install alternative. The installer verifies hashes, refuses an unowned destination, preserves the previous app on updates and leaves account settings untouched. Read [docs/INSTALL.md](docs/INSTALL.md) before testing.
-
-## Launch the standalone ELF on PS5
-
-1. Launch your existing jailbreak and an ELF loader capable of running graphical PS5 SDK payloads. The loader must expose the standard SCE modules and allow video output, controller access, networking and `/data` writes.
-2. Send `dist/retro-attachments.elf` using your loader's normal method, or copy it to the loader's supported payload directory. The directory and network port depend on your loader. This is an ELF payload, not an installable PKG.
-3. In **Settings**, enter your RetroAchievements username and **web API key** from https://retroachievements.org/settings. Select **Connect my collection**. Do not use your account password.
-4. Open a game to view achievements and earned dates. Use **Explore games** to browse each console's games with achievement sets, including games you have not played.
-5. **Appearance** offers Midnight Blue, OLED Black, Retro CRT, and Neon Purple. The choice persists across launches.
-
-No credentials are bundled. Each installation uses its own API key. The key is masked in the interface but stored as plaintext in `/data/retroatlas/settings.json` with restrictive file permissions. Do not share that file. Theme, progress mode and username are stored there too. On a desktop, the default data directory is `userdata/`.
-
-The font and CA certificate bundle are embedded in the ELF. On startup, the CA bundle is written to the data directory for libcurl. TLS certificate and hostname verification remain enabled. Ensure the console clock is correct. Settings and live API access require writable storage.
+Settings stay in `/data/retroatlas/settings.json` for update compatibility. The API key is masked in the interface and stored as plaintext with restrictive file permissions. Do not share this file. Desktop builds use `userdata/`. The embedded CA certificate bundle is written to the data directory; TLS verification stays enabled. Ensure the console clock is correct and storage is writable.
 
 ## Controls
 
@@ -84,7 +79,8 @@ Download `ps5-payload-dev.tar.gz` from that release and extract it into `.toolch
 export LLVM_CONFIG=/opt/homebrew/opt/llvm@18/bin/llvm-config
 make ps5
 make installer
-make test-installer test-bundle
+make test-installer test-surface test-bundle
+python3 scripts/package_release.py
 
 # Desktop requires SDL2 and libcurl development files plus their *-config tools.
 make desktop

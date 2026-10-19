@@ -38,6 +38,7 @@ jobs:
             dist/retro-attachments.elf
             dist/retro-attachments-installer.elf
             dist/PPSA99841.zip
+            dist/Retro-Attachments-Homebrew-Launcher.zip
             dist/Retro-Attachments-installer-test.zip
             dist/Retro-Attachments-source.zip
             dist/installer-manifest.json

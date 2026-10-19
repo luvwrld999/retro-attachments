@@ -165,6 +165,9 @@ struct App {
       else if (arg == "--data-dir" && i + 1 < argc)
         dir = argv[++i];
     }
+#ifdef __PROSPERO__
+    SDL_setenv("SDL_VIDEODRIVER", "ps5", 1);
+#endif
     startupTrace("2: initializing video and controller");
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_TIMER))
       throw std::runtime_error(SDL_GetError());
@@ -785,7 +788,7 @@ struct App {
             12);
     p->label(user.empty() ? "Welcome, player" : user, 35, 602, 20, th.text,
              146);
-    p->text("PS5 / 0.1.2 alpha", 28, 675, 14, th.muted);
+    p->text("PS5 / 0.1.3 alpha", 28, 675, 14, th.muted);
     p->text(detail     ? "YOUR NEXT MILESTONE"
             : tab == 0 ? "RETROACHIEVEMENTS"
             : tab == 1 ? "THE GAME CATALOGUE"
@@ -1132,6 +1135,7 @@ int main(int argc, char **argv) {
     app.run();
   } catch (const std::exception &e) {
     startupTrace(e.what());
+    SDL_Quit();
     fprintf(stderr, "Retro Attachments: %s\n", e.what());
     curl_global_cleanup();
     return 1;

@@ -10,7 +10,7 @@ build/assets.hpp: assets/Lato-Regular.ttf assets/cacert.pem scripts/embed.py
 ps5: dist/retro-attachments.elf
 dist/retro-attachments.elf: $(SOURCES) build/assets.hpp
 	mkdir -p dist
-	$(PS5_PAYLOAD_SDK)/bin/prospero-clang++ $(CXXFLAGS) $(CPPFLAGS) -D__PROSPERO__ -I$(PS5_PAYLOAD_SDK)/target/user/homebrew/include/SDL2 -I$(PS5_PAYLOAD_SDK)/target/user/homebrew/include src/main.cpp -o $@ -lSDL2 -liconv -lSceSystemService -lSceUserService -lScePad -lSceAudioOut -lsamplerate -lSceVideoOut -lSceKeyboard -lSceImeDialog -lcurl -lpsl -lzstd -lssl -lcrypto -lz -lpthread
+	$(PS5_PAYLOAD_SDK)/bin/prospero-clang++ $(CXXFLAGS) $(CPPFLAGS) -D__PROSPERO__ -DRETRO_STARTUP_DIAGNOSTICS -I$(PS5_PAYLOAD_SDK)/target/user/homebrew/include/SDL2 -I$(PS5_PAYLOAD_SDK)/target/user/homebrew/include src/main.cpp -o $@ -lSDL2 -liconv -lSceSystemService -lSceUserService -lScePad -lSceAudioOut -lsamplerate -lSceVideoOut -lSceKeyboard -lSceImeDialog -lcurl -lpsl -lzstd -lssl -lcrypto -lz -lpthread
 
 desktop: build/retro-attachments
 build/retro-attachments: $(SOURCES) build/assets.hpp
@@ -42,7 +42,7 @@ app: ps5 native-tools launcher/sce_sys/icon0.png
 installer: app build/assets.hpp
 	python3 scripts/embed_installer.py
 	$(PS5_PAYLOAD_SDK)/bin/prospero-clang -c build/installer_bundle.S -o build/installer_bundle.o
-	$(PS5_PAYLOAD_SDK)/bin/prospero-clang++ $(INSTALLER_FLAGS) $(PS5_INCLUDES) -D__PROSPERO__ installer/main.cpp build/installer_bundle.o -o dist/retro-attachments-installer.elf $(SDL_PS5_LIBS) -lpthread
+	$(PS5_PAYLOAD_SDK)/bin/prospero-clang++ $(INSTALLER_FLAGS) $(PS5_INCLUDES) -D__PROSPERO__ -DRETRO_STARTUP_DIAGNOSTICS installer/main.cpp build/installer_bundle.o -o dist/retro-attachments-installer.elf $(SDL_PS5_LIBS) -lpthread
 installer-desktop: app build/assets.hpp
 	python3 scripts/embed_installer.py
 	python3 scripts/host_bundle.py
