@@ -165,8 +165,10 @@ struct App {
       else if (arg == "--data-dir" && i + 1 < argc)
         dir = argv[++i];
     }
+    startupTrace("2: initializing video and controller");
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_TIMER))
       throw std::runtime_error(SDL_GetError());
+    startupTrace("3: video and controller initialized");
     mkdir(dir.c_str(), 0700);
     {
       std::ofstream ca(dir + "/cacert.pem", std::ios::binary);
@@ -198,8 +200,11 @@ struct App {
     renderer = createDisplayRenderer(window);
     SDL_RenderSetLogicalSize(renderer, 1280, 720);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    startupTrace("7: building font textures");
     p = std::make_unique<Painter>(renderer);
+    startupTrace("8: font ready; starting worker");
     worker = std::make_unique<Worker>();
+    startupTrace("9: worker ready");
     for (int i = 0; i < SDL_NumJoysticks(); ++i)
       connect(i);
     if (demo) {
@@ -1077,6 +1082,7 @@ struct App {
             232, 594, 18, th.muted);
   }
   void render() {
+    if (frames == 0) startupTrace("10: drawing first frame");
     base();
     if (detail)
       drawDetail();
@@ -1103,7 +1109,9 @@ struct App {
       SDL_FreeSurface(surface);
       running = false;
     }
+    if (frames == 0) startupTrace("11: submitting first frame");
     presentDisplay(window, renderer);
+    if (frames == 0) startupTrace("12: first frame submitted");
     ++frames;
   }
   void run() {
@@ -1117,11 +1125,13 @@ struct App {
 };
 #ifndef RETROATLAS_TEST
 int main(int argc, char **argv) {
+  startupTrace("1: entered app main; initializing network library");
   curl_global_init(CURL_GLOBAL_DEFAULT);
   try {
     App app(argc, argv);
     app.run();
   } catch (const std::exception &e) {
+    startupTrace(e.what());
     fprintf(stderr, "Retro Attachments: %s\n", e.what());
     curl_global_cleanup();
     return 1;

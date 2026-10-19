@@ -2,7 +2,7 @@ PS5_PAYLOAD_SDK ?= $(CURDIR)/.toolchain/opt/ps5-payload-sdk
 HOST_CXX ?= clang++
 CPPFLAGS = -Ithird_party -Ibuild -Isrc
 CXXFLAGS = -std=c++17 -O2 -Wall -Wextra
-SOURCES = src/main.cpp src/model.hpp src/api.hpp src/render.hpp src/display.hpp
+SOURCES = src/main.cpp src/model.hpp src/api.hpp src/render.hpp src/display.hpp src/startup_trace.hpp
 .PHONY: all ps5 desktop test
 all: ps5
 build/assets.hpp: assets/Lato-Regular.ttf assets/cacert.pem scripts/embed.py
