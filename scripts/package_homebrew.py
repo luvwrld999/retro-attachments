@@ -8,7 +8,15 @@ for folder, binary in [('RetroAttachments', 'retro-attachments.elf'),
                        ('RetroAttachmentsInstaller', 'retro-attachments-installer.elf')]:
     data = (dist / binary).read_bytes()
     assert data[:6] == b'\x7fELF\x02\x01'
+    # Keep websrv's required entry point and provide an identifiable file name.
     entries[f'homebrew/{folder}/eboot.elf'] = (data, 0o755)
+    entries[f'homebrew/{folder}/{folder}.elf'] = (data, 0o755)
+    title = 'Retro Attachments' if folder == 'RetroAttachments' else 'Retro Attachments Installer'
+    extension = 'async function main() { return ' + json.dumps({
+        'mainText': title,
+        'secondaryText': 'Launch as graphical homebrew via websrv'
+    }) + '; }\n'
+    entries[f'homebrew/{folder}/homebrew.js'] = (extension.encode(), 0o644)
     entries[f'homebrew/{folder}/sce_sys/icon0.png'] = ((root / 'launcher/sce_sys/icon0.png').read_bytes(), 0o644)
 entries['INSTALL.md'] = ((root / 'docs/INSTALL.md').read_bytes(), 0o644)
 entries['LICENSE'] = ((root / 'LICENSE').read_bytes(), 0o644)

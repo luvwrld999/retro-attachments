@@ -6,6 +6,7 @@ Version 0.1.3-alpha.1 changes graphical launch to PS5 Homebrew Launcher / websrv
 
 1. Download `Retro-Attachments-Homebrew-Launcher.zip`.
 2. Extract the contained `homebrew` folder onto your USB root. The viewer must be at `homebrew/RetroAttachments/eboot.elf`; the installer is `homebrew/RetroAttachmentsInstaller/eboot.elf`. Alternatively copy these two app folders into `/data/homebrew/` over FTP. Do not overwrite unrelated folders.
+   Each folder also includes a matching named ELF (`RetroAttachments.elf` or `RetroAttachmentsInstaller.elf`). It is byte-identical to `eboot.elf`; keep `eboot.elf` for automatic websrv discovery. The included `homebrew.js` sets a readable library title. Neither filename makes direct Payload Manager injection compatible with graphical launch.
 3. Close any game or other graphical homebrew first; websrv's graphical loader can terminate a running BigApp when launching another.
 4. Start your jailbreak and Homebrew Launcher / websrv. Refresh its homebrew library, normally at `http://YOUR-PS5-IP:8080/`.
 5. Launch **RetroAttachments** from the library as graphical homebrew. Do not send this viewer through Payload Manager or the websrv `/elfldr` upload page. Do not select daemon/background execution.
