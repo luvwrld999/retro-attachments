@@ -1,0 +1,45 @@
+name: Build and test
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install host build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-18 llvm-18 lld-18 libsdl2-dev libcurl4-openssl-dev zlib1g-dev python3 curl
+      - name: Fetch pinned PS5 toolchain
+        run: |
+          curl --fail --location --retry 3 -o /tmp/ps5-payload-dev.tar.gz https://github.com/ps5-payload-dev/pacbrew-repo/releases/download/v0.41.1/ps5-payload-dev.tar.gz
+          echo 'e811bc2e4676c5bb7f80a8fe928d2985dce599996a5ca6b54da3e72699287887  /tmp/ps5-payload-dev.tar.gz' | sha256sum --check --strict
+          mkdir -p .toolchain
+          tar -xzf /tmp/ps5-payload-dev.tar.gz -C .toolchain
+      - name: Build and test
+        env:
+          LLVM_CONFIG: llvm-config-18
+          HOST_CXX: clang++-18
+        run: |
+          make desktop test test-installer
+          make installer
+          make test-bundle
+          python3 scripts/validate_package.py
+          python3 scripts/package_release.py
+      - name: Upload hardware-test artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Retro-Attachments-hardware-test
+          path: |
+            dist/retro-attachments.elf
+            dist/retro-attachments-installer.elf
+            dist/PPSA99841.zip
+            dist/Retro-Attachments-installer-test.zip
+            dist/Retro-Attachments-source.zip
+            dist/installer-manifest.json
+            dist/SHA256SUMS
+          if-no-files-found: error
