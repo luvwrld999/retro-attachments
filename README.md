@@ -1,18 +1,16 @@
 # Retro Attachments — PS5 RetroAchievements viewer
 
-**v0.1.3-alpha.1** packages the viewer and graphical installer for **PS5 Homebrew Launcher / websrv**. Earlier alpha builds failed to allocate display memory when launched through Payload Manager. This build corrects the launch path; successful display on firmware 13.60 still needs confirmation.
+**v0.1.4-alpha.1** adds self-contained viewer and installer ELFs for **Payload Manager**. They automatically hand graphical startup to your running websrv service. PS5 firmware 13.60 display still needs hardware confirmation.
 
 ## Download and run
 
-[Download v0.1.3-alpha.1](https://github.com/luvwrld999/retro-attachments/releases/tag/v0.1.3-alpha.1). Start with **Retro-Attachments-Homebrew-Launcher.zip**.
+[Download v0.1.4-alpha.1](https://github.com/luvwrld999/retro-attachments/releases/tag/v0.1.4-alpha.1). Use **Retro-Attachments-Payload-Manager.zip**.
 
-1. Extract the ZIP's `homebrew` folder to the root of a USB drive, or copy its two app folders into `/data/homebrew/` using FTP.
-2. Close any running game/homebrew, start your jailbreak and Homebrew Launcher / websrv, and open its homebrew library (usually `http://YOUR-PS5-IP:8080/`).
-3. Launch **RetroAttachments** from that library. Use its graphical homebrew launch action, not Payload Manager or websrv's ELF-upload/daemon action.
-4. If the viewer opens, test the demo and then enter your RetroAchievements username and web API key in **Settings**. The key is available at https://retroachievements.org/settings; do not enter your password.
-5. Optionally launch **RetroAttachmentsInstaller** from the same library to install the ShadowMountPlus home-screen shortcut.
+1. Start websrv on port 8080 and close any running game or graphical homebrew. You do not need to open the websrv library.
+2. Select **RetroAttachments.elf** in **Payload Manager**. The ELF contains the viewer and automatically stages it for graphical launch.
+3. Once the viewer works, optionally select **RetroAttachmentsInstaller.elf** in Payload Manager to install the ShadowMountPlus home-screen shortcut.
 
-See [installation and recovery](docs/INSTALL.md). The installed shortcut now requests graphical homebrew launch through websrv on **127.0.0.1:8080**. Keep websrv running when using it. ShadowMountPlus alone does not replace websrv.
+Use these capitalized entry points, not the old lowercase raw graphical ELFs or `eboot.elf`. Websrv must be running, not merely installed. See [Payload Manager instructions](docs/PAYLOAD-MANAGER.md) and [installation and recovery](docs/INSTALL.md). Your account settings stay in their existing location.
 
 ## Why the launch path changed
 
@@ -78,8 +76,8 @@ Download `ps5-payload-dev.tar.gz` from that release and extract it into `.toolch
 # macOS with Homebrew LLVM 18
 export LLVM_CONFIG=/opt/homebrew/opt/llvm@18/bin/llvm-config
 make ps5
-make installer
-make test-installer test-surface test-bundle
+make payload-manager
+make test-installer test-surface test-bundle test-payload-manager
 python3 scripts/package_release.py
 
 # Desktop requires SDL2 and libcurl development files plus their *-config tools.

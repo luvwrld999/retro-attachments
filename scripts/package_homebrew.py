@@ -19,6 +19,7 @@ for folder, binary in [('RetroAttachments', 'retro-attachments.elf'),
     entries[f'homebrew/{folder}/homebrew.js'] = (extension.encode(), 0o644)
     entries[f'homebrew/{folder}/sce_sys/icon0.png'] = ((root / 'launcher/sce_sys/icon0.png').read_bytes(), 0o644)
 entries['INSTALL.md'] = ((root / 'docs/INSTALL.md').read_bytes(), 0o644)
+entries['PAYLOAD-MANAGER.md'] = ((root / 'docs/PAYLOAD-MANAGER.md').read_bytes(), 0o644)
 entries['LICENSE'] = ((root / 'LICENSE').read_bytes(), 0o644)
 entries['THIRD_PARTY.md'] = ((root / 'THIRD_PARTY.md').read_bytes(), 0o644)
 manifest = {name: hashlib.sha256(data).hexdigest() for name, (data, mode) in entries.items()}

@@ -26,7 +26,7 @@ jobs:
           HOST_CXX: clang++-18
         run: |
           make desktop test test-installer test-surface
-          make installer
+          make payload-manager test-payload-manager
           make test-bundle
           python3 scripts/validate_package.py
           python3 scripts/package_release.py
@@ -35,6 +35,9 @@ jobs:
         with:
           name: Retro-Attachments-hardware-test
           path: |
+            dist/RetroAttachments.elf
+            dist/RetroAttachmentsInstaller.elf
+            dist/Retro-Attachments-Payload-Manager.zip
             dist/retro-attachments.elf
             dist/retro-attachments-installer.elf
             dist/PPSA99841.zip

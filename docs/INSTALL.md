@@ -1,5 +1,7 @@
 # Install and launch Retro Attachments
 
+For the preferred Payload Manager route in v0.1.4-alpha.1, use [these instructions](PAYLOAD-MANAGER.md) and the dedicated `RetroAttachments.elf` / `RetroAttachmentsInstaller.elf` entry points. The sections below describe the alternative direct websrv library route and home-screen shortcut.
+
 Version 0.1.3-alpha.1 changes graphical launch to PS5 Homebrew Launcher / websrv. Previous Payload Manager tests failed during direct display-memory allocation. This new path is not yet confirmed on the user's PS5.
 
 ## Test the viewer first

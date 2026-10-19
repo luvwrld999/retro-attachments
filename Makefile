@@ -66,3 +66,11 @@ test-surface:
 	mkdir -p build
 	$(HOST_CXX) $(CXXFLAGS) $(CPPFLAGS) $$(sdl2-config --cflags) tests/display_test.cpp -o build/display_test $$(sdl2-config --libs)
 	SDL_VIDEODRIVER=dummy ./build/display_test
+
+.PHONY: payload-manager
+payload-manager: installer
+	PS5_PAYLOAD_SDK="$(PS5_PAYLOAD_SDK)" python3 scripts/build_payload_bridge.py
+
+.PHONY: test-payload-manager
+test-payload-manager:
+	python3 tests/payload_bridge_test.py

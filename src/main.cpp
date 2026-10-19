@@ -788,7 +788,7 @@ struct App {
             12);
     p->label(user.empty() ? "Welcome, player" : user, 35, 602, 20, th.text,
              146);
-    p->text("PS5 / 0.1.3 alpha", 28, 675, 14, th.muted);
+    p->text("PS5 / 0.1.4 alpha", 28, 675, 14, th.muted);
     p->text(detail     ? "YOUR NEXT MILESTONE"
             : tab == 0 ? "RETROACHIEVEMENTS"
             : tab == 1 ? "THE GAME CATALOGUE"
