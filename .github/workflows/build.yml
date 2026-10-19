@@ -22,7 +22,7 @@ jobs:
           tar -xzf /tmp/ps5-payload-dev.tar.gz -C .toolchain
       - name: Build and test
         env:
-          LLVM_CONFIG: llvm-config-18
+          LLVM_CONFIG: /usr/bin/llvm-config-18
           HOST_CXX: clang++-18
         run: |
           make desktop test test-installer
