@@ -1,3 +1,4 @@
+#include "display.hpp"
 #include "api.hpp"
 #include "render.hpp"
 #include <deque>
@@ -194,12 +195,7 @@ struct App {
                               SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (!window)
       throw std::runtime_error(SDL_GetError());
-    renderer = SDL_CreateRenderer(
-        window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!renderer)
-      renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-    if (!renderer)
-      throw std::runtime_error(SDL_GetError());
+    renderer = createDisplayRenderer(window);
     SDL_RenderSetLogicalSize(renderer, 1280, 720);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     p = std::make_unique<Painter>(renderer);
@@ -784,7 +780,7 @@ struct App {
             12);
     p->label(user.empty() ? "Welcome, player" : user, 35, 602, 20, th.text,
              146);
-    p->text("PS5   /   0.1.1", 28, 675, 14, th.muted);
+    p->text("PS5 / 0.1.2 alpha", 28, 675, 14, th.muted);
     p->text(detail     ? "YOUR NEXT MILESTONE"
             : tab == 0 ? "RETROACHIEVEMENTS"
             : tab == 1 ? "THE GAME CATALOGUE"
@@ -1107,7 +1103,7 @@ struct App {
       SDL_FreeSurface(surface);
       running = false;
     }
-    SDL_RenderPresent(renderer);
+    presentDisplay(window, renderer);
     ++frames;
   }
   void run() {

@@ -25,7 +25,7 @@ jobs:
           LLVM_CONFIG: /usr/bin/llvm-config-18
           HOST_CXX: clang++-18
         run: |
-          make desktop test test-installer
+          make desktop test test-installer test-surface
           make installer
           make test-bundle
           python3 scripts/validate_package.py

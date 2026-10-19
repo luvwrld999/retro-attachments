@@ -2,7 +2,7 @@ PS5_PAYLOAD_SDK ?= $(CURDIR)/.toolchain/opt/ps5-payload-sdk
 HOST_CXX ?= clang++
 CPPFLAGS = -Ithird_party -Ibuild -Isrc
 CXXFLAGS = -std=c++17 -O2 -Wall -Wextra
-SOURCES = src/main.cpp src/model.hpp src/api.hpp src/render.hpp
+SOURCES = src/main.cpp src/model.hpp src/api.hpp src/render.hpp src/display.hpp
 .PHONY: all ps5 desktop test
 all: ps5
 build/assets.hpp: assets/Lato-Regular.ttf assets/cacert.pem scripts/embed.py
@@ -60,3 +60,9 @@ test-bundle:
 	python3 scripts/host_bundle.py
 	$(HOST_CXX) $(INSTALLER_FLAGS) tests/bundle_test.cpp build/installer_bundle_host.o -o build/bundle_test
 	./build/bundle_test
+
+.PHONY: test-surface
+test-surface:
+	mkdir -p build
+	$(HOST_CXX) $(CXXFLAGS) $(CPPFLAGS) $$(sdl2-config --cflags) tests/display_test.cpp -o build/display_test $$(sdl2-config --libs)
+	SDL_VIDEODRIVER=dummy ./build/display_test

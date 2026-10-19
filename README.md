@@ -1,11 +1,15 @@
 # Retro Attachments — PS5 RetroAchievements viewer
 
 Native SDL2 application targeting the PS5 payload SDK, distributed as `dist/retro-attachments.elf`.
-**Version 0.1.1-alpha.1** is the first public alpha (the app displays core version 0.1.1). It cross-compiles successfully; it has **not been run on a PS5**. Firmware 13.60 and your particular ELF loader still require testing. A native home-screen launcher and installer are now included; see [installation and recovery instructions](docs/INSTALL.md).
+**Version 0.1.2-alpha.1** is the renderer startup fix alpha. It cross-compiles successfully; it has **not been run on a PS5**. Firmware 13.60 and your particular ELF loader still require testing. A native home-screen launcher and installer are now included; see [installation and recovery instructions](docs/INSTALL.md).
 
 ## Download
 
-[Download v0.1.1-alpha.1](https://github.com/luvwrld999/retro-attachments/releases/tag/v0.1.1-alpha.1). Choose `retro-attachments.elf` for direct loading, `retro-attachments-installer.elf` for the home-screen installer, or the complete ZIP for both plus source and screenshots. See [installation instructions](docs/INSTALL.md).
+[Download v0.1.2-alpha.1](https://github.com/luvwrld999/retro-attachments/releases/tag/v0.1.2-alpha.1). Choose `retro-attachments.elf` for direct loading, `retro-attachments-installer.elf` for the home-screen installer, or the complete ZIP for both plus source and screenshots. See [installation instructions](docs/INSTALL.md).
+
+## Renderer startup fix in 0.1.2-alpha.1
+
+Fixes the window-renderer selection path that failed with "Couldn't find matching render driver" on the reported Payload Manager 0.5.2 setup. The PS5 build now binds its software renderer directly to the window surface and explicitly presents that surface. This fix still requires on-console confirmation.
 
 ## Interface preview
 

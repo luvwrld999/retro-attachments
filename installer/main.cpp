@@ -1,3 +1,4 @@
+#include "display.hpp"
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "installer_bundle.hpp"
 #include "render.hpp"
@@ -36,12 +37,7 @@ struct Installer {
                          SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_SHOWN);
     if (!window)
       throw std::runtime_error(SDL_GetError());
-    renderer = SDL_CreateRenderer(
-        window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!renderer)
-      renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-    if (!renderer)
-      throw std::runtime_error(SDL_GetError());
+    renderer = createDisplayRenderer(window);
     SDL_RenderSetLogicalSize(renderer, 1280, 720);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     painter = std::make_unique<Painter>(renderer);
@@ -155,7 +151,7 @@ struct Installer {
       }
       running = false;
     }
-    SDL_RenderPresent(renderer);
+    presentDisplay(window, renderer);
   }
   void run() {
     while (running) {
