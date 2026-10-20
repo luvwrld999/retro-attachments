@@ -1,16 +1,14 @@
 # Retro Attachments — PS5 RetroAchievements viewer
 
+> **DO NOT RUN v0.1.4-alpha.1 on PS5.** A user reported a full-console crash after launching it through Payload Manager on firmware 13.60. The failing stage and root cause are not yet established. Testing is suspended; no replacement build is verified. Local tests did not validate the console launch handoff.
+
 **v0.1.4-alpha.1** adds self-contained viewer and installer ELFs for **Payload Manager**. They automatically hand graphical startup to your running websrv service. PS5 firmware 13.60 display still needs hardware confirmation.
 
-## Download and run
+## Release status
 
-[Download v0.1.4-alpha.1](https://github.com/luvwrld999/retro-attachments/releases/tag/v0.1.4-alpha.1). Use **Retro-Attachments-Payload-Manager.zip**.
+**v0.1.4-alpha.1 is withdrawn from testing following a reported full-console crash.** Do not run its viewer, installer, or home-screen shortcut. Earlier versions also lack confirmed successful operation on this console; they are not recommended substitutes.
 
-1. Start websrv on port 8080 and close any running game or graphical homebrew. You do not need to open the websrv library.
-2. Select **RetroAttachments.elf** in **Payload Manager**. The ELF contains the viewer and automatically stages it for graphical launch.
-3. Once the viewer works, optionally select **RetroAttachmentsInstaller.elf** in Payload Manager to install the ShadowMountPlus home-screen shortcut.
-
-Use these capitalized entry points, not the old lowercase raw graphical ELFs or `eboot.elf`. Websrv must be running, not merely installed. See [Payload Manager instructions](docs/PAYLOAD-MANAGER.md) and [installation and recovery](docs/INSTALL.md). Your account settings stay in their existing location.
+The source and release history are retained for investigation. No new hardware test is requested until the failure stage and installed loader versions are understood. Preserve existing logs if available; do not reproduce the crash to obtain them.
 
 ## Why the launch path changed
 

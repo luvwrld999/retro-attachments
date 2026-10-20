@@ -1,5 +1,7 @@
 # Launch from Payload Manager
 
+> **DO NOT RUN v0.1.4-alpha.1 on PS5.** A user reported a full-console crash after launching it through Payload Manager on firmware 13.60. The failing stage and root cause are not yet established. Testing is suspended; no replacement build is verified. Local tests did not validate the console launch handoff.
+
 Version 0.1.4-alpha.1 adds dedicated Payload Manager entry points.
 
 1. Start websrv on port 8080 using your existing setup. You do not need to open its library.

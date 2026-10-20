@@ -1,5 +1,7 @@
 # Install and launch Retro Attachments
 
+> **DO NOT RUN v0.1.4-alpha.1 on PS5.** A user reported a full-console crash after launching it through Payload Manager on firmware 13.60. The failing stage and root cause are not yet established. Testing is suspended; no replacement build is verified. Local tests did not validate the console launch handoff.
+
 For the preferred Payload Manager route in v0.1.4-alpha.1, use [these instructions](PAYLOAD-MANAGER.md) and the dedicated `RetroAttachments.elf` / `RetroAttachmentsInstaller.elf` entry points. The sections below describe the alternative direct websrv library route and home-screen shortcut.
 
 Version 0.1.3-alpha.1 changes graphical launch to PS5 Homebrew Launcher / websrv. Previous Payload Manager tests failed during direct display-memory allocation. This new path is not yet confirmed on the user's PS5.
